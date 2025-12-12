@@ -1,0 +1,15 @@
+dronecan_driver:
+  ros__parameters:
+    port: 'can0'
+    node_id: 125
+    bitrate: 1000000
+    frame_id: 'mag'
+    mag_topic: 'mag'
+    compass_topic: 'mag/compass'
+    azimuth_topic: 'mag/compass/azimuth'
+    azimuth_var_topic: 'mag/compass/azimuth_var'
+    publish_mag: true
+    publish_compass: true
+    publish_azimuth: true
+    publish_azimuth_var: true
+    magnetic_declination_offset: 16
