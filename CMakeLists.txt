@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rm3100_driver)
+project(dronecan_driver)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -22,6 +22,7 @@ install(PROGRAMS
 
 install(DIRECTORY
   launch
+  config
   DESTINATION share/${PROJECT_NAME}
 )
 
