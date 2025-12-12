@@ -10,7 +10,7 @@ from compass_interfaces.msg import Azimuth
 
 class DroneCANDriver(rclpy.node.Node):
     def __init__(self):
-        super().__init__('dronecan_driver')
+        super().__init__('rm3100_driver')
         port = self.declare_parameter('port', 'can0').value
         node_id = self.declare_parameter('node_id', 125).value
         bitrate = self.declare_parameter('bitrate', 1000000).value

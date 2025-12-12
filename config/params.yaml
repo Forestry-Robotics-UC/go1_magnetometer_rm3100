@@ -1,4 +1,4 @@
-dronecan_driver:
+rm3100_driver:
   ros__parameters:
     port: 'can0'
     node_id: 125

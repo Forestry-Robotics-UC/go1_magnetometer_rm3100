@@ -5,16 +5,16 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     config = os.path.join(
-        get_package_share_directory('dronecan_driver'),
+        get_package_share_directory('rm3100_driver'),
         'config',
         'params.yaml'
     )
 
     return LaunchDescription([
         Node(
-            package='dronecan_driver',
-            executable='dronecan_driver.py',
-            name='dronecan_driver',
+            package='rm3100_driver',
+            executable='rm3100_driver.py',
+            name='rm3100_driver',
             output='screen',
             parameters=[config]
         )

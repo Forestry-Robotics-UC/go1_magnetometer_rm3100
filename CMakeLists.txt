@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(dronecan_driver)
+project(rm3100_driver)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -16,7 +16,7 @@ find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 
 install(PROGRAMS
-  src/dronecan_driver.py
+  src/rm3100_driver.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
