@@ -3,8 +3,13 @@ rm3100_driver:
     # --- CAN Interface Settings ---
     # The CAN interface name (e.g., can0, vcan0)
     port: 'can0'
-    # The DroneCAN node ID for this driver
+    
+    # The DroneCAN Node ID for this Driver (Local Server).
+    # You do not need to change this parameter.
+    # This ID identifies the driver on the bus so it can act as a server.
+    # The driver will automatically detect the sensor and assign it an ID.
     node_id: 125
+    
     # CAN bus bitrate in bps
     bitrate: 1000000
 

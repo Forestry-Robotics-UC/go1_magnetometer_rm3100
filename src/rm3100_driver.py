@@ -9,6 +9,8 @@ and publishes standard ROS 2 messages.
 import rclpy
 import rclpy.node
 import dronecan
+from dronecan.app.node_monitor import NodeMonitor
+from dronecan.app.dynamic_node_id import CentralizedServer
 import select
 import subprocess
 import statistics
@@ -83,7 +85,16 @@ class DroneCANDriver(rclpy.node.Node):
         # --- DroneCAN Initialization ---
         # Initialize the node and add a handler for MagneticFieldStrength messages
         self.node = dronecan.make_node(self.port, node_id=self.node_id, bitrate=self.bitrate)
+        
+        # Initialize Dynamic Node ID Allocator
+        # This allows the driver to automatically assign IDs to unconfigured sensors
+        self.node_monitor = NodeMonitor(self.node)
+        self.allocator = CentralizedServer(self.node, self.node_monitor)
+        
         self.node.add_handler(dronecan.uavcan.equipment.ahrs.MagneticFieldStrength, self.mag_handler)
+        
+        self.get_logger().info(f'DroneCAN Driver started with Node ID: {self.node_id}')
+        self.get_logger().info('Dynamic Node ID Allocator enabled')
 
         # --- Publisher Initialization ---
         if self.publish_mag:
@@ -196,8 +207,6 @@ class DroneCANDriver(rclpy.node.Node):
             # Calculate variance of the raw sensor data stream
             var_x = statistics.variance(self.mag_x_buffer)
             var_y = statistics.variance(self.mag_y_buffer)
-            
-            #print(f"Mean X: {mx}, Mean Y: {my}, Var X: {var_x}, Var Y: {var_y}")
             
             horizontal_intensity = mx**2 + my**2
             
