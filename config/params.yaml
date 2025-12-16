@@ -1,15 +1,55 @@
 rm3100_driver:
   ros__parameters:
+    # --- CAN Interface Settings ---
+    # The CAN interface name (e.g., can0, vcan0)
     port: 'can0'
+    # The DroneCAN node ID for this driver
     node_id: 125
+    # CAN bus bitrate in bps
     bitrate: 1000000
+
+    # --- Coordinate & Reference Frames ---
+    # Output coordinate frame convention:
+    # 'ENU' (East-North-Up) - Standard ROS
+    # 'NED' (North-East-Down) 
+    coordinates_frame: 'ENU' 
+
+    # Heading reference:
+    # 'GEOGRAPHIC' - True North (requires declination offset)
+    # 'MAGNETIC'   - Magnetic North
+    reference: 'GEOGRAPHIC' 
+
+    # Output unit for angles:
+    # 'DEG' - Degrees
+    # 'RAD' - Radians
+    unit: 'DEG' 
+
+    # Magnetic Declination Offset (in degrees)
+    # Add to Magnetic North to get True North.
+    # Positive for East, Negative for West.
+    # Example: -0.8333 for ~0.83 degrees West
+    magnetic_declination_offset: -0.8333
+    
+    # --- ROS Topics & Frames ---
+    # TF frame ID for the magnetometer
     frame_id: 'mag'
+    
+    # Topic names for publications
     mag_topic: 'mag'
     compass_topic: 'mag/compass'
     azimuth_topic: 'mag/compass/azimuth'
     azimuth_var_topic: 'mag/compass/azimuth_var'
+    
+    # --- Publication Toggles ---
+    # Enable/Disable specific publishers
     publish_mag: true
     publish_compass: true
     publish_azimuth: true
     publish_azimuth_var: true
-    magnetic_declination_offset: 16
+
+    # --- Sensor Covariance ---
+    # Static covariance matrix for the magnetic field (3x3 row-major)
+    # [xx, xy, xz, yx, yy, yz, zx, zy, zz]
+    mag_covariance: [0.0, 0.0, 0.0,
+                     0.0, 0.0, 0.0,
+                     0.0, 0.0, 0.0]
