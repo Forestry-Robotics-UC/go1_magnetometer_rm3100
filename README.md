@@ -13,25 +13,29 @@ This ROS 2 wrapper provides a driver for the RM3100 magnetometer using the Drone
 ## Dependencies
 
 *   ROS2
-*   `dronecan` (Python package)
+
+## Python Dependencies
+```bash
+pip install dronecan
+```
 
 ### ROS Dependencies
 ```bash
-sudo apt install ros-$ROS_DISTRO-angles ros-$ROS_DISTRO-topic-tools ros-$ROS_DISTRO-sensor-msgs ros-$ROS_DISTRO-std-msgs
+sudo apt install ros-$ROS_DISTRO-angles ros-$ROS_DISTRO-topic-tools ros-$ROS_DISTRO-sensor-msgs ros-$ROS_DISTRO-std-msgs ros-$ROS_DISTRO-backward-ros
 ```
 
 ### System Dependencies
 ```bash
-sudo apt install libgeographiclib-dev libcxxopts-dev 
+sudo apt install libgeographiclib-dev libcxxopts-dev libexpected-dev libboost-dev iproute2
 ```
 
 ### Source Dependencies
 Clone these repositories into your workspace `src` folder:
 ```bash
 git clone -b ros2 https://github.com/ctu-vras/compass.git
-git clone https://github.com/TartanLlama/expected.git
 git clone -b ros2 https://github.com/ctu-vras/ros-utils.git
 git clone https://github.com/ctu-vras/cras_msgs.git
+git clone https://github.com/TartanLlama/expected.git
 ```
 
 ## Configuration
@@ -64,7 +68,6 @@ Parameters are defined in `config/params.yaml`.
 ## Usage
 
 1.  **Build the package**:
-    *Note: Do not use `--symlink-install` as it is incompatible with some of the source dependencies.*
     ```bash
     colcon build
     source install/setup.bash
