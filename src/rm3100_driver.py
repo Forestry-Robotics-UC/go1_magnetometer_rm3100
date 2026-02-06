@@ -136,13 +136,12 @@ class DroneCANDriver(rclpy.node.Node):
         # Convert raw Gauss values to Tesla (1 Gauss = 1e-4 Tesla)
         # and adjust axes based on ENU/NED selection.
         if self.coordinates_frame == 'ENU':
-            self.mag_compass.orientation = 0 # ENU 0, NED 1
-            self.mag_msg.magnetic_field.x = -msg.magnetic_field_ga[0] * 1e-4
-            self.mag_msg.magnetic_field.y = -msg.magnetic_field_ga[1] * 1e-4
-            self.mag_msg.magnetic_field.z = msg.magnetic_field_ga[2] * 1e-4
-            
+            self.mag_compass.orientation = 0  # ENU 0, NED 1
+            self.mag_msg.magnetic_field.x = msg.magnetic_field_ga[1] * 1e-4  # Y_NED
+            self.mag_msg.magnetic_field.y = msg.magnetic_field_ga[0] * 1e-4  # X_NED
+            self.mag_msg.magnetic_field.z = -msg.magnetic_field_ga[2] * 1e-4 # -Z_NED
         elif self.coordinates_frame == 'NED':
-            self.mag_compass.orientation = 1 # ENU 0, NED 1
+            self.mag_compass.orientation = 1  # ENU 0, NED 1
             self.mag_msg.magnetic_field.x = msg.magnetic_field_ga[0] * 1e-4
             self.mag_msg.magnetic_field.y = msg.magnetic_field_ga[1] * 1e-4
             self.mag_msg.magnetic_field.z = msg.magnetic_field_ga[2] * 1e-4
