@@ -34,6 +34,10 @@ rm3100_driver:
     # Positive for East, Negative for West.
     # Example: -0.8333 for ~0.83 degrees West
     magnetic_declination_offset: -0.8333
+
+    # Add offset to the RM3100 readings in degrees
+    # to account for magnetometer disalignment
+    azimuth_offset: 14.0
     
     # --- ROS Topics & Frames ---
     # TF frame ID for the magnetometer

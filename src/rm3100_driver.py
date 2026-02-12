@@ -15,7 +15,7 @@ import select
 import subprocess
 import statistics
 from collections import deque
-from math import atan2
+from math import atan2, sin, cos
 from math import pi as M_PI
 from sensor_msgs.msg import MagneticField
 from std_msgs.msg import Header, Float64
@@ -60,6 +60,9 @@ class DroneCANDriver(rclpy.node.Node):
         
         # Magnetic Declination Offset (to correct Magnetic North to True North)
         self.magnetic_declination_offset = self.declare_parameter('magnetic_declination_offset', 0.5).value
+
+        # Azimuth Offset (to account for magnetometer disalignment)
+        self.azimuth_offset = self.declare_parameter('azimuth_offset', 0.0).value
         
         # Static Covariance Matrix (used if dynamic calculation is not applicable)
         self.mag_covariance = self.declare_parameter('mag_covariance', [0.0, 0.0, 0.0,
@@ -137,14 +140,29 @@ class DroneCANDriver(rclpy.node.Node):
         # and adjust axes based on ENU/NED selection.
         if self.coordinates_frame == 'ENU':
             self.mag_compass.orientation = 0  # ENU 0, NED 1
-            self.mag_msg.magnetic_field.x = msg.magnetic_field_ga[1] * 1e-4  # Y_NED
-            self.mag_msg.magnetic_field.y = msg.magnetic_field_ga[0] * 1e-4  # X_NED
-            self.mag_msg.magnetic_field.z = -msg.magnetic_field_ga[2] * 1e-4 # -Z_NED
+            self.mag_msg.magnetic_field.x = -msg.magnetic_field_ga[1] * 1e-4 # -Y
+            self.mag_msg.magnetic_field.y = -msg.magnetic_field_ga[0] * 1e-4 # -X
+            self.mag_msg.magnetic_field.z = msg.magnetic_field_ga[2] * 1e-4  # Z
+        # The Y and Z axes are negative because the sensor is upside down. The original way is to use the "MATEKSYS" brand face down, but we are using face up.
         elif self.coordinates_frame == 'NED':
             self.mag_compass.orientation = 1  # ENU 0, NED 1
-            self.mag_msg.magnetic_field.x = msg.magnetic_field_ga[0] * 1e-4
-            self.mag_msg.magnetic_field.y = msg.magnetic_field_ga[1] * 1e-4
-            self.mag_msg.magnetic_field.z = msg.magnetic_field_ga[2] * 1e-4
+            self.mag_msg.magnetic_field.x = msg.magnetic_field_ga[0] * 1e-4 # X
+            self.mag_msg.magnetic_field.y = -msg.magnetic_field_ga[1] * 1e-4 # -Y
+            self.mag_msg.magnetic_field.z = -msg.magnetic_field_ga[2] * 1e-4 # -Z
+
+        # Apply Azimuth Offset to the magnetic field vector
+        # Convert offset to radians
+        theta = self.azimuth_offset * M_PI / 180.0
+        
+        # Rotate x and y components
+        # New X = x * cos(theta) - y * sin(theta)
+        # New Y = x * sin(theta) + y * cos(theta)
+        
+        original_mag_x = self.mag_msg.magnetic_field.x
+        original_mag_y = self.mag_msg.magnetic_field.y
+        
+        self.mag_msg.magnetic_field.x = original_mag_x * cos(theta) - original_mag_y * sin(theta)
+        self.mag_msg.magnetic_field.y = original_mag_x * sin(theta) + original_mag_y * cos(theta)
             
         self.mag_msg.magnetic_field_covariance = self.mag_covariance
         
@@ -186,9 +204,9 @@ class DroneCANDriver(rclpy.node.Node):
         
         # Normalize azimuth to [-180, 180) degrees or [-pi, pi) radians
         if self.unit == 'DEG':
-            self.mag_compass.azimuth = (self.mag_compass.azimuth + 180.0) % 360.0 - 180.0
+            self.mag_compass.azimuth = -(self.mag_compass.azimuth + 180.0) % 360.0 - 180.0
         else:
-            self.mag_compass.azimuth = (self.mag_compass.azimuth + M_PI) % (2 * M_PI) - M_PI
+            self.mag_compass.azimuth = -(self.mag_compass.azimuth + M_PI) % (2 * M_PI) - M_PI
         
         # --- Dynamic Variance Calculation ---
         # Update buffers with latest readings
