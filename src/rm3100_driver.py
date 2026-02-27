@@ -160,16 +160,16 @@ class DroneCANDriver(rclpy.node.Node):
         # and adjust axes based on ENU/NED selection.
         if self.coordinates_frame == "ENU":
             self.mag_compass.orientation = 0  # ENU 0, NED 1
-            self.mag_msg.magnetic_field.x = -msg.magnetic_field_ga[1] * 1e-4  # -Y
-            self.mag_msg.magnetic_field.y = -msg.magnetic_field_ga[0] * 1e-4  # -X
+            self.mag_msg.magnetic_field.x = msg.magnetic_field_ga[0] * 1e-4  # -Y
+            self.mag_msg.magnetic_field.y = -msg.magnetic_field_ga[1] * 1e-4  # -X
             self.mag_msg.magnetic_field.z = -msg.magnetic_field_ga[2] * 1e-4  # -Z
         # The Y and Z axes are negative because the sensor is upside down. The original way is to use the "MATEKSYS" brand face down, but we are using face up.
         # Axis (Arrow poiting forward): X-Right  Y-Forward  Z-Up
         elif self.coordinates_frame == "NED":
             self.mag_compass.orientation = 1  # ENU 0, NED 1
-            self.mag_msg.magnetic_field.x = msg.magnetic_field_ga[0] * 1e-4  # X
-            self.mag_msg.magnetic_field.y = -msg.magnetic_field_ga[1] * 1e-4  # -Y
-            self.mag_msg.magnetic_field.z = -msg.magnetic_field_ga[2] * 1e-4  # -Z
+            self.mag_msg.magnetic_field.x = msg.magnetic_field_ga[1] * 1e-4  # X
+            self.mag_msg.magnetic_field.y = msg.magnetic_field_ga[0] * 1e-4  # -Y
+            self.mag_msg.magnetic_field.z = msg.magnetic_field_ga[2] * 1e-4  # -Z
 
         # Apply Azimuth Offset to the magnetic field vector
         # Convert offset to radians
